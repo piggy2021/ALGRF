@@ -2,7 +2,7 @@
 import os
 
 # szu 169 sever
-datasets_root = '/data/ty'
+datasets_root = '/home/amax/data/ty'
 # local pc
 # datasets_root = '/home/qub/data/saliency'
 
