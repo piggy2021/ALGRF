@@ -246,7 +246,7 @@ class INet(nn.Module):
         self.linearf4 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
 
     def forward(self, x, flow=None, shape=None):
-        out2h, out3h, out4h, out5v = self.bkbone(x) # layer1, layer2, layer3, layer4
+        out5v, out2h, _, out3h, out4h = self.bkbone(x) # layer1, layer2, layer3, layer4
         out2h, out3h, out4h, out5v = self.squeeze2(out2h), self.squeeze3(out3h), self.squeeze4(out4h), self.squeeze5(out5v)
 
         flow_layer4, flow_layer1, _, flow_layer2, flow_layer3 = self.flow_bkbone(flow)
