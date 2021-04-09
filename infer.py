@@ -22,9 +22,7 @@ torch.cuda.set_device(device_id)
 
 # the following two args specify the location of the file of trained model (pth extension)
 # you should have the pth file in the folder './$ckpt_path$/$exp_name$'
-ckpt_path = './ckpt'
-
-exp_name = 'VideoSaliency_2021-04-06 23:20:10'
+ckpt_path = './pretrained'
 
 args = {
     'gnn': True,
@@ -83,7 +81,7 @@ def main():
     print ('load snapshot \'%s\' for testing' % args['snapshot'])
     # net.load_state_dict(torch.load('pretrained/R2Net.pth', map_location='cuda:2'))
     # net = load_part_of_model2(net, 'pretrained/R2Net.pth', device_id=2)
-    net.load_state_dict(torch.load(os.path.join(ckpt_path, exp_name, args['snapshot'] + '.pth'),
+    net.load_state_dict(torch.load(os.path.join(ckpt_path, args['snapshot'] + '.pth'),
                                map_location='cuda:' + str(device_id)))
     net.eval()
     net.cuda()
@@ -97,7 +95,7 @@ def main():
             mae_record = AvgMeter()
 
             if args['save_results']:
-                check_mkdir(os.path.join(ckpt_path, exp_name, '(%s) %s_%s' % (exp_name, name, args['snapshot'])))
+                check_mkdir(os.path.join(ckpt_path, '(%s)_%s' % (name, args['snapshot'])))
             img_list = [i_id.strip() for i_id in open(imgs_path)]
             video = ''
             pre_predict = None
@@ -186,7 +184,7 @@ def main():
 
                 if args['save_results']:
                     folder, sub_name = os.path.split(img_name)
-                    save_path = os.path.join(ckpt_path, exp_name, '(%s) %s_%s' % (exp_name, name, args['snapshot']), folder)
+                    save_path = os.path.join(ckpt_path, '(%s)_%s' % (name, args['snapshot']), folder)
                     if not os.path.exists(save_path):
                         os.makedirs(save_path)
                     Image.fromarray(prediction).save(os.path.join(save_path, sub_name + '.png'))
