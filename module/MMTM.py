@@ -6,21 +6,6 @@ from module.GCN import GCN
 import math
 import torch.nn.functional as F
 
-coarse_adj_list = [
-            # 1  2  3
-            [0.333, 0.333, 0.333],  # 1
-            [0.333, 0.333, 0.333],  # 2
-            [0.333, 0.333, 0.333],  # 3
-        ]
-
-coarse_adj_list2 = [
-            # 1  2  3  4
-            [0.25, 0.25, 0.25, 0.25],  # 1
-            [0.25, 0.25, 0.25, 0.25],  # 2
-            [0.25, 0.25, 0.25, 0.25],  # 3
-            [0.25, 0.25, 0.25, 0.25],  # 4
-        ]
-
 device_id = 0
 
 def L_Matrix(adj_npy, adj_size):
