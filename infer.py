@@ -71,7 +71,7 @@ def main():
             mae_record = AvgMeter()
 
             if args['save_results']:
-                check_mkdir(os.path.join(ckpt_path, '(%s)_%s' % (name, args['snapshot'])))
+                check_mkdir(os.path.join(ckpt_path, '%s' % name))
             img_list = [i_id.strip() for i_id in open(imgs_path)]
             video = ''
             pre_predict = None
