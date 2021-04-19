@@ -6,8 +6,7 @@ from PIL import Image
 from torch.autograd import Variable
 from torchvision import transforms
 
-from config import ecssd_path, hkuis_path, pascals_path, sod_path, dutomron_path, \
-    davis_path, fbms_path, mcl_path, uvsd_path, visal_path, vos_path, segtrack_path, davsod_path
+from config import davis_path, visal_path, davsod_path
 from models.net import INet
 from utils_mine import MaxMinNormalization, check_mkdir, AvgMeter, cal_precision_recall_mae, cal_fmeasure
 import time
