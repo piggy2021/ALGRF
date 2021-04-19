@@ -9,7 +9,6 @@ from torchvision import transforms
 from config import davis_path, visal_path, davsod_path
 from models.net import INet
 from utils_mine import MaxMinNormalization, check_mkdir, AvgMeter, cal_precision_recall_mae, cal_fmeasure
-import time
 from matplotlib import pyplot as plt
 
 
@@ -97,14 +96,9 @@ def main():
                     flow = flow.resize(args['input_size'])
                     img_var = Variable(img_transform(img).unsqueeze(0), volatile=True).cuda()
                     flow_var = Variable(img_transform(flow).unsqueeze(0), volatile=True).cuda()
-                    start = time.time()
 
                     prediction2, prediction, prediction3 = net(img_var, flow_var)
                     prediction = torch.sigmoid(prediction3)
-
-                    end = time.time()
-                    pre_predict = prediction
-                    print('running time:', (end - start))
                 else:
                     if name == 'VOS' or name == 'DAVSOD':
                         img = Image.open(os.path.join(root, img_name + '.png')).convert('RGB')
@@ -121,14 +115,8 @@ def main():
                     img_var = Variable(img_transform(img).unsqueeze(0), volatile=True).cuda()
                     flow_var = Variable(img_transform(flow).unsqueeze(0), volatile=True).cuda()
 
-                    start = time.time()
-
                     prediction2, prediction, prediction3 = net(img_var, flow_var)
                     prediction = torch.sigmoid(prediction3)
-
-                    end = time.time()
-                    print('running time:', (end - start))
-
 
                 precision = to_pil(prediction.data.squeeze(0).cpu())
                 precision = precision.resize(shape)
