@@ -17,14 +17,10 @@ torch.manual_seed(2020)
 # set which gpu to use
 device_id = 0
 torch.cuda.set_device(device_id)
-
-# the following two args specify the location of the file of trained model (pth extension)
-# you should have the pth file in the folder './$ckpt_path$/$exp_name$'
 ckpt_path = './pretrained'
 
 args = {
     'gnn': True,
-    'snapshot': '184000',  # your snapshot filename (exclude extension name)
     'save_results': True,  # whether to save the resulting masks
     'input_size': (380, 380)
 }
@@ -60,8 +56,8 @@ def main():
 
     net = INet(cfg=None, GNN=args['gnn'])
 
-    print ('load snapshot \'%s\' for testing' % args['snapshot'])
-    net.load_state_dict(torch.load(os.path.join(ckpt_path, args['snapshot'] + '.pth'),
+    print ('load snapshot for testing')
+    net.load_state_dict(torch.load(os.path.join(ckpt_path, 'ALGRF_pretrained'),
                                map_location='cuda:' + str(device_id)))
     net.eval()
     net.cuda()
@@ -97,7 +93,7 @@ def main():
                     img_var = Variable(img_transform(img).unsqueeze(0), volatile=True).cuda()
                     flow_var = Variable(img_transform(flow).unsqueeze(0), volatile=True).cuda()
 
-                    prediction2, prediction, prediction3 = net(img_var, flow_var)
+                    prediction, prediction2, prediction3 = net(img_var, flow_var)
                     prediction = torch.sigmoid(prediction3)
                 else:
                     if name == 'VOS' or name == 'DAVSOD':
@@ -115,7 +111,7 @@ def main():
                     img_var = Variable(img_transform(img).unsqueeze(0), volatile=True).cuda()
                     flow_var = Variable(img_transform(flow).unsqueeze(0), volatile=True).cuda()
 
-                    prediction2, prediction, prediction3 = net(img_var, flow_var)
+                    prediction, prediction2, prediction3 = net(img_var, flow_var)
                     prediction = torch.sigmoid(prediction3)
 
                 precision = to_pil(prediction.data.squeeze(0).cpu())
@@ -136,7 +132,7 @@ def main():
 
                 if args['save_results']:
                     folder, sub_name = os.path.split(img_name)
-                    save_path = os.path.join(ckpt_path, '(%s)_%s' % (name, args['snapshot']), folder)
+                    save_path = os.path.join(ckpt_path, '%s' % name, folder)
                     if not os.path.exists(save_path):
                         os.makedirs(save_path)
                     Image.fromarray(prediction).save(os.path.join(save_path, sub_name + '.png'))
