@@ -37,22 +37,10 @@ img_transform = transforms.Compose([
 ])
 to_pil = transforms.ToPILImage()
 
-# to_test = {'ecssd': ecssd_path, 'hkuis': hkuis_path, 'pascal': pascals_path, 'sod': sod_path, 'dutomron': dutomron_path}
-# to_test = {'ecssd': ecssd_path}
-
 # to_test = {'davis': os.path.join(davis_path, 'davis_test2')}
 # gt_root = os.path.join(davis_path, 'GT')
 # flow_root = os.path.join(davis_path, 'flow')
 # imgs_path = os.path.join(davis_path, 'davis_test2_single.txt')
-
-# to_test = {'FBMS': os.path.join(fbms_path, 'FBMS_Testset')}
-# gt_root = os.path.join(fbms_path, 'GT')
-# flow_root = os.path.join(fbms_path, 'FBMS_Testset_flownet2_image')
-# imgs_path = os.path.join(fbms_path, 'FBMS_test_single.txt')
-
-# to_test = {'SegTrackV2': os.path.join(segtrack_path, 'SegTrackV2_test')}
-# gt_root = os.path.join(segtrack_path, 'GT')
-# imgs_path = os.path.join(segtrack_path, 'SegTrackV2_test_single.txt')
 
 to_test = {'ViSal': os.path.join(visal_path, 'ViSal_test')}
 gt_root = os.path.join(visal_path, 'GT')
@@ -69,18 +57,12 @@ imgs_path = os.path.join(visal_path, 'ViSal_test_single.txt')
 # flow_root = os.path.join(davsod_path, 'flow')
 # imgs_path = os.path.join(davsod_path, 'DAVSOD_test_single.txt')
 
-# to_test = {'MCL': os.path.join(mcl_path, 'MCL_test')}
-# gt_root = os.path.join(mcl_path, 'GT')
-# imgs_path = os.path.join(mcl_path, 'MCL_test_single.txt')
 
 def main():
-    # net = R3Net(motion='', se_layer=False, dilation=False, basic_model='resnet50')
 
     net = INet(cfg=None, GNN=args['gnn'])
 
     print ('load snapshot \'%s\' for testing' % args['snapshot'])
-    # net.load_state_dict(torch.load('pretrained/R2Net.pth', map_location='cuda:2'))
-    # net = load_part_of_model2(net, 'pretrained/R2Net.pth', device_id=2)
     net.load_state_dict(torch.load(os.path.join(ckpt_path, args['snapshot'] + '.pth'),
                                map_location='cuda:' + str(device_id)))
     net.eval()
@@ -118,8 +100,8 @@ def main():
                     flow_var = Variable(img_transform(flow).unsqueeze(0), volatile=True).cuda()
                     start = time.time()
 
-                    prediction2, prediction, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, prediction3 = net(img_var, flow_var)
-                    prediction = torch.sigmoid(prediction)
+                    prediction2, prediction, prediction3 = net(img_var, flow_var)
+                    prediction = torch.sigmoid(prediction3)
 
                     end = time.time()
                     pre_predict = prediction
@@ -142,37 +124,20 @@ def main():
 
                     start = time.time()
 
-                    prediction2, prediction, prediction3, _, _, _, _, _, _, _, _, _, _, _, _, _, _ = net(img_var, flow_var)
+                    prediction2, prediction, prediction3 = net(img_var, flow_var)
                     prediction = torch.sigmoid(prediction3)
 
                     end = time.time()
                     print('running time:', (end - start))
-                    pre_predict = prediction
-                # e = Erosion2d(1, 1, 5, soft_max=False).cuda()
-                # prediction2 = e(prediction)
-                #
-                # precision2 = to_pil(prediction2.data.squeeze(0).cpu())
-                # precision2 = prediction2.data.squeeze(0).cpu().numpy()
-                # precision2 = precision2.resize(shape)
-                # prediction2 = np.array(precision2)
-                # prediction2 = prediction2.astype('float')
+
 
                 precision = to_pil(prediction.data.squeeze(0).cpu())
                 precision = precision.resize(shape)
                 prediction = np.array(precision)
                 prediction = prediction.astype('float')
 
-                # plt.style.use('classic')
-                # plt.subplot(1, 2, 1)
-                # plt.imshow(prediction)
-                # plt.subplot(1, 2, 2)
-                # plt.imshow(precision2[0])
-                # plt.show()
-
                 prediction = MaxMinNormalization(prediction, prediction.max(), prediction.min()) * 255.0
                 prediction = prediction.astype('uint8')
-                # if args['crf_refine']:
-                #     prediction = crf_refine(np.array(img), prediction)
 
                 gt = np.array(Image.open(os.path.join(gt_root, img_name + '.png')).convert('L'))
                 precision, recall, mae = cal_precision_recall_mae(prediction, gt)
