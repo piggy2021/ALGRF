@@ -51,7 +51,7 @@ class GFM2(nn.Module):
         out1f = self.conv1f(flow)
         out2f = self.conv2f(out1f)
         if self.GNN:
-            fuse = self.gcn_fuse2(out2l, out2h, out2f, feedback)
+            fuse = self.gcn_fuse(out2l, out2h, out2f, feedback)
         else:
             fuse = out2h * out2l * out2f
         out3h = self.conv3h(fuse) + out1h
