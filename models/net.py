@@ -139,7 +139,7 @@ class INet(nn.Module):
 
         out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred2 = self.decoder2(out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred1)
 
-        out2h, out3h, out4h, out5v = self.se_many(out2h, out3h, out4h, out5v, pred2)
+        out2h, out3h, out4h, out5v, out2f, out3f, out4f = self.se_many(out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred2)
 
         out2f = F.interpolate(out2f, size=out2f_scale, mode='bilinear')
         out3f = F.interpolate(out3f, size=out3f_scale, mode='bilinear')
