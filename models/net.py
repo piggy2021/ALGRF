@@ -5,7 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from backbone.ResNet import ResNet34, ResNet50
 
-from module.MMTM import SEQuart, SEMany2Many3
+from module.LGR import SEQuart, SEMany2Many3
 
 class GFM2(nn.Module):
     def __init__(self, GNN=False):
