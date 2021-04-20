@@ -2,7 +2,10 @@
 This is the code for the paper "Video Salient Object Detection via Adaptive Local-Global Refinement"
 
 # Runtime environment
+ubuntu 18.04
+
 PyTorch 1.8.0
+
 cuda 10.2
 
 # Usage
