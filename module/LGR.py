@@ -72,12 +72,8 @@ class SEQuart(nn.Module):
         excitation2 = self.fc_two(feat_cat).view(batch, channel, 1, 1)
         excitation3 = self.fc_three(feat_cat).view(batch, channel, 1, 1)
         excitation4 = self.fc_four(feat_cat).view(batch, channel, 1, 1)
-
-        weighted_feat_a = low + excitation2 * high + excitation3 * flow + excitation4 * feedback
-        weighted_feat_b = excitation1 * low + high + excitation3 * flow + excitation4 * feedback
-        weighted_feat_c = excitation1 * low + excitation2 * high + flow + excitation4 * feedback
-        weighted_feat_d = excitation1 * low + excitation2 * high + excitation3 * flow + feedback
-        feat_cat = torch.cat([weighted_feat_a, weighted_feat_b, weighted_feat_c, weighted_feat_d], dim=1)
+        
+        feat_cat = torch.cat([excitation1 * low, excitation2 * high, excitation3 * flow, excitation4 * feedback], dim=1)
 
         attention_vector = self.gate(feat_cat)
 
