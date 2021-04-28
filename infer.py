@@ -57,7 +57,7 @@ def main():
     net = INet(cfg=None, GNN=args['gnn'])
 
     print ('load snapshot for testing')
-    net.load_state_dict(torch.load(os.path.join(ckpt_path, 'ALGRF_pretrained'),
+    net.load_state_dict(torch.load(os.path.join(ckpt_path, 'ALGRF_pretrained.pth'),
                                map_location='cuda:' + str(device_id)))
     net.eval()
     net.cuda()
