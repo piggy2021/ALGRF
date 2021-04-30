@@ -1,5 +1,5 @@
 # ALGRF
-This is the code for the paper "Video Salient Object Detection via Adaptive Local-Global Refinement"
+This is the code for the paper "Video Salient Object Detection via Adaptive Local-Global Refinement". Paper link: https://arxiv.org/abs/2104.14360
 
 # Runtime environment
 ubuntu 18.04
