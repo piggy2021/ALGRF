@@ -4,7 +4,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from backbone.ResNet import ResNet34, ResNet50
-import time
 
 from module.LGR import SEQuart, SEMany2Many3
 
@@ -129,32 +128,22 @@ class INet(nn.Module):
         self.linearf4 = nn.Conv2d(64, 1, kernel_size=3, stride=1, padding=1)
 
     def forward(self, x, flow=None, shape=None):
-        start = time.time()
         out5v, out2h, _, out3h, out4h = self.bkbone(x) # layer1, layer2, layer3, layer4
         out2h, out3h, out4h, out5v = self.squeeze2(out2h), self.squeeze3(out3h), self.squeeze4(out4h), self.squeeze5(out5v)
 
         flow_layer4, flow_layer1, _, flow_layer2, flow_layer3 = self.flow_bkbone(flow)
         out1f, out2f = self.flow_align1(flow_layer1), self.flow_align2(flow_layer2)
         out3f, out4f = self.flow_align3(flow_layer3), self.flow_align4(flow_layer4)
-        end1 = time.time()
-        print('backbone running time:', (end1 - start))
+
         out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred1 = self.decoder1(out2h, out3h, out4h, out5v, out2f, out3f, out4f)
-        end2 = time.time()
-        print('raw fusion running time:', (end2 - end1))
         out2f_scale, out3f_scale, out4f_scale = out2f.size()[2:], out3f.size()[2:], out4f.size()[2:]
 
         out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred2 = self.decoder2(out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred1)
-        end3 = time.time()
-        print('local refinements running time:', (end3 - end2))
         out2h, out3h, out4h, out5v, out2f, out3f, out4f = self.se_many(out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred2)
-        end4 = time.time()
-        print('global refinements running time:', (end4 - end3))
         out2f = F.interpolate(out2f, size=out2f_scale, mode='bilinear')
         out3f = F.interpolate(out3f, size=out3f_scale, mode='bilinear')
         out4f = F.interpolate(out4f, size=out4f_scale, mode='bilinear')
         out2h, out3h, out4h, out5v, out1f, out3f, out4f, pred3 = self.decoder3(out2h, out3h, out4h, out5v, out2f, out3f, out4f, pred2)
-        end5 = time.time()
-        print('local refinements running time:', (end5 - end4))
         shape = x.size()[2:] if shape is None else shape
 
         pred1a = F.interpolate(self.linearp1(pred1), size=shape, mode='bilinear')
