@@ -5,7 +5,6 @@ import torch
 from PIL import Image
 from torch.autograd import Variable
 from torchvision import transforms
-import time
 
 from config import davis_path, visal_path, davsod_path
 from models.net import INet
@@ -106,11 +105,8 @@ def main():
                     flow = flow.resize(args['input_size'])
                     img_var = Variable(img_transform(img).unsqueeze(0), volatile=True).cuda()
                     flow_var = Variable(img_transform(flow).unsqueeze(0), volatile=True).cuda()
-                    start = time.time()
                     prediction, prediction2, prediction3 = net(img_var, flow_var)
                     prediction = torch.sigmoid(prediction3)
-                    end = time.time()
-                    print('running time:', (end - start))
                 precision = to_pil(prediction.data.squeeze(0).cpu())
                 precision = precision.resize(shape)
                 prediction = np.array(precision)
